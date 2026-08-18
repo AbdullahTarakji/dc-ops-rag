@@ -69,8 +69,19 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
 
+      # All extras, not just what the test job installs: torch and mlflow ship in the
+      # container even though CI never imports them.
       - name: Export the locked dependency set
-        run: uv export --no-hashes --all-extras --format requirements-txt > requirements-audit.txt
+        run: |
+          uv export --no-hashes --all-extras --no-emit-project \
+            --format requirements-txt > requirements-audit.txt
+          # An empty export would make the audit pass vacuously, which is worse than a
+          # failing audit because it looks green.
+          test "$(grep -cv '^#' requirements-audit.txt)" -gt 50
 
+      # PYSEC-2026-3552 is ignored deliberately and the reasoning is written down in
+      # docs/security.md, along with the condition that ends the exception.
       - name: Audit for known vulnerabilities
-        run: uvx pip-audit --requirement requirements-audit.txt --strict
+        run: |
+          uvx pip-audit --requirement requirements-audit.txt --strict \
+            --ignore-vuln PYSEC-2026-3552

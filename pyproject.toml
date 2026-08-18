@@ -22,8 +22,18 @@ dependencies = [
 ingest = ["pymupdf4llm>=0.0.17", "tiktoken>=0.8"]
 retrieval = ["sentence-transformers>=3.3", "qdrant-client>=1.12", "rank-bm25>=0.2.2", "faiss-cpu>=1.9"]
 api = ["fastapi>=0.115", "uvicorn[standard]>=0.32", "sse-starlette>=2.1"]
-agent = ["langgraph>=0.2.50", "langchain-ollama>=0.2", "xgboost>=2.1", "scikit-learn>=1.5", "shap>=0.46"]
-eval = ["mlflow>=2.18", "numpy>=2.1", "pandas>=2.2", "scipy>=1.14"]
+agent = [
+  "langgraph>=0.2.50",
+  "langchain-ollama>=0.2",
+  "xgboost>=2.1",
+  "scikit-learn>=1.5",
+  "shap>=0.48",
+  # shap pulls numba; without a floor the resolver happily picks numba 0.53 / llvmlite 0.36
+  # from 2021, which cannot build on Python 3.11. Pin the floor to versions that ship 3.11
+  # wheels rather than discovering this during the agent iteration.
+  "numba>=0.61",
+]
+eval = ["mlflow>=3.15.1", "numpy>=2.1", "pandas>=2.2", "scipy>=1.14"]
 ui = ["gradio>=5.5"]
 
 [dependency-groups]
@@ -39,6 +49,17 @@ dev = [
 
 [project.urls]
 Repository = "https://github.com/AbdullahTarakji/dc-ops-rag"
+
+# Constraints on transitive dependencies we do not depend on directly. Each entry needs a
+# reason: a constraint with no explanation becomes impossible to remove safely.
+[tool.uv]
+constraint-dependencies = [
+  # pyarrow 21.0.0 (pulled in by mlflow) carries PYSEC-2026-113; fixed in 23.0.1.
+  "pyarrow>=23.0.1",
+  # cryptography is deliberately NOT constrained to >= 50: mlflow 3.15.1 caps it below 50,
+  # and the open advisory against 49.x is a PKCS#7 EnvelopedData oracle we never exercise.
+  # See docs/security.md for the accepted-risk entry and the condition to revisit it.
+]
 
 [build-system]
 requires = ["hatchling"]
