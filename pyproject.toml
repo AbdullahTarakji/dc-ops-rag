@@ -21,7 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 ingest = ["pymupdf4llm>=0.0.17", "tiktoken>=0.8"]
 retrieval = ["sentence-transformers>=3.3", "qdrant-client>=1.12", "rank-bm25>=0.2.2", "faiss-cpu>=1.9"]
-api = ["fastapi>=0.115", "uvicorn[standard]>=0.32", "sse-starlette>=2.1"]
+api = ["fastapi>=0.115", "uvicorn[standard]>=0.52.3", "sse-starlette>=2.1"]
 agent = [
   "langgraph>=0.2.50",
   "langchain-ollama>=0.2",

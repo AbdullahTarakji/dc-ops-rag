@@ -583,7 +583,7 @@ requires-dist = [
     { name = "shap", marker = "extra == 'agent'", specifier = ">=0.48" },
     { name = "sse-starlette", marker = "extra == 'api'", specifier = ">=2.1" },
     { name = "tiktoken", marker = "extra == 'ingest'", specifier = ">=0.8" },
-    { name = "uvicorn", extras = ["standard"], marker = "extra == 'api'", specifier = ">=0.32" },
+    { name = "uvicorn", extras = ["standard"], marker = "extra == 'api'", specifier = ">=0.52.3" },
     { name = "xgboost", marker = "extra == 'agent'", specifier = ">=2.1" },
 ]
 provides-extras = ["ingest", "retrieval", "api", "agent", "eval", "ui"]
